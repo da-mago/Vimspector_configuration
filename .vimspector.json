@@ -1,0 +1,181 @@
+/* Basic configurations for debugging with Vimspector
+  
+   Note: C/C++ style comments are allowed here since Vimspector
+         will remove them before parsing the json file
+
+   Next, you can find basic configurations for debugging local/remote
+   python/C programs.
+
+   1. Python       : debug local python code
+   2. Python Remote: debug remote python code
+   3. C            : debug local C code
+   4. C Remote     : debug remote C code
+
+   Debugging chain:
+   Vim -> Vimspector plugin -> specific-language adapter -> specific-language debugger -> binary (or attach to remote server)
+          |                    |                            |                             |
+          |                    |                            |                             \_ File to debug
+          |                    |                            \_ native debugger (ie: gdb)
+          |                    \_ DAP to native-language debugger (ie: vscode-cpptools)
+          |                       Yes.. Vimspector takes advantage of the Vscode adapters.
+          |                       
+          \_ Visual debugging support (windows for code/variables/..) and DAP (Debug Adapter Protocol from Microsoft) support
+
+   DAP is a language-agnostic debug protocol, which of course, is not supported by any debugger :), so DAP-debugger adapters are
+   needed in order to complete the chain. In the end, you'll be using the usual debugger under the hood. You can even execute regular
+   native commands if you need to (ie: (for gdb) -exec p i)
+
+   For remote debugging, you need, of course, to launch the debugger server (ie: gdbserver, debugpy, ...). You can automate this process
+   inside the adapter configuration (by connecting using PASSWORDLESS ssh and running the server in the remote machine). 
+   In the next configurations, it is assumed that you manually enter the remote machine and launch the debugger server. I don't quite
+   like to be Forced to use passwordless ssh to automate this task (anyway configure it is very easy).
+
+   Curious notes:
+   - Python config uses 'stopOnEntry' and C config uses 'stopAtEntry'. 'stopOnEntry' does not work (for me) in remote python debugging
+   - Python remote config uses 'attach' and C remote config uses 'launch'
+
+   Future work:
+   - Add configuration example for cross-compiled code and using OCD 
+*/
+
+{
+  "configurations": {
+    // Local python debugging
+    "Python": {
+      "adapter": "debugpy",
+      "configuration": {
+        "request": "launch",
+        "program": "${file}",
+        "justMyCode#json": "true",
+        "stopOnEntry": true
+      },
+      // Explicitly configured to prevent Vimspector to ask the user for it when starting debugging
+      "breakpoints": {
+        "exception": {
+          "raised": "",
+          "caught": "",
+          "uncaught": "Y"
+        }
+      }
+    },
+    "Python Remote": {
+      /* Remote python debugging
+         This configuration it is assuming that you enter the remote machine and manually launch the debugger server:
+         >> python3 -m debugpy  --listen 0.0.0.0:5678 --wait-for-client prueba
+         Then start debugging from Vim
+
+         Note:
+         - 0.0.0.0 means accepting connection from any IP. If host is ignored (ie: just 5678), localhost is assumed
+         - 5678 is the port (any value)
+         - prueba is your file (including debug symbols) to debug
+
+         Alternatives:
+         - 1. Use a ssh-tunnel between local and remote machines, so when local debugger connects to localhost, it reaches
+              the debugger server.
+
+              Run this command in the local machine:
+              >> ssh  -L 5678:127.0.0.1:5678 -l ${USER} ${HOSTNAME}
+              and insert the ssh password manually (if applicable)
+              Once you are inside the remote macine, launch the debugger server (as above)
+
+         - 2. Avoid manually launching the debug server.
+
+              Edit your target python file (add the next lines):
+              >> import debugpy
+              >> 
+              >> debugpy.listen(5678)
+              >> print("Waiting for debugger attach")
+              >> debugpy.wait_for_client()
+              >> debugpy.breakpoint()
+
+              Then, you just need to open your python file:
+              >> python3 prueba
+              Note: local python file needs to have also those lines (BUT #commented)
+
+              This alternative is more useful when the python code to debug is launched indirectly by other entity.
+
+         Note:
+         - 'variables' section is explitly configured to prevent Vimspector to ask the user for them (feel free to 
+           uncomment those lines
+         - IDEM for 'breakpoints' section
+      */
+      "variables": {
+        "host": "localhost",
+        "port": 5678, 
+        "RemoteRoot": "${workspaceRoot}/trash"
+      },
+
+      "adapter": "multi-session",
+
+      "configuration": {
+        "request": "attach",
+        "stopOnEntry": true,
+        "pathMappings": [
+          {
+            "localRoot": "${workspaceRoot}",
+            "remoteRoot": "${RemoteRoot}"
+          }
+        ]
+      },
+      "breakpoints": {
+        "exception": {
+          "raised": "",
+          "caught": "",
+          "uncaught": "Y"
+        }
+      }
+    },
+
+    "C": {
+      // Local C debugging
+      "adapter": "vscode-cpptools",
+      "configuration": {
+        "request": "launch",
+        "program": "${workspaceRoot}/${fileBasenameNoExtension}",
+        "StopAtEntry": true,
+        "MIMode": "gdb",
+        "setupCommands": [
+          {
+            "description": "Enable pretty-printing for gdb",
+            "text": "-enable-pretty-printing",
+            "ignoreFailures": true
+          }
+        ]
+      }
+    },
+
+    "C Remote": {
+      /* Remote C debugging
+         This configuration it is assuming that you enter the remote machine and manually launch the debugger server:
+         >> gdbserver --once --no-startup-with-shell  localhost:1679 ${BIN}
+         Then start debugging from Vim
+
+         Note:
+         - 'miDebuggerServerAddress' makes the difference (configured -> connects to remote gdbserver, not-configured -> debugs local binary)
+         - 'variables' section is explitly configured to prevent Vimspector to ask the user for them (feel free to 
+           uncomment those lines
+      */
+      "variables": {
+        "host": "localhost",
+        "port": 1679
+      },
+      "adapter": "cpptools-remote",
+      "configuration": {
+        "request": "launch",
+        "cwd": "${workspaceFolder}",
+        "program": "${workspaceRoot}/${fileBasenameNoExtension}",
+        "StopAtEntry": true,
+        "MIMode": "gdb",
+        "miDebuggerServerAddress": "${host}:${port}",
+        // Don't know about this..it is just configured everywhere
+        "setupCommands": [
+          {
+            "description": "Enable pretty-printing for gdb",
+            "text": "-enable-pretty-printing",
+            "ignoreFailures": true
+          }
+        ]
+      }
+    }
+  }
+}
