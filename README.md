@@ -19,6 +19,7 @@ Prerequisites:
 **Steps**
 - Copy '.vimspector.json' file to your project root folder (it is mandatory to use this filename)
   - Note: this file contains debug configuration profiles for local and remote debugging (both C and python)
+  - **Note**: By now, also copy '.gadgets.json' to your project folder
 - Open your C or python code with Vim... and hit 'F5'... thats all!
 
 <img src="https://user-images.githubusercontent.com/63365742/131861406-8bdc0632-7060-46f8-abf7-30fae03faa77.png" width="50%">
