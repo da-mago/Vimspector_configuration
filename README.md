@@ -41,32 +41,107 @@ Otherwise, install it or compile it from sources (out of scope of this README)
 
 ![image](https://user-images.githubusercontent.com/63365742/131861594-bca5ce07-464d-4626-8010-7407cb3268ff.png)
 
+## Vimspector overview
 
-## Moving things to your own projects
+I promise I won't deep in too much on this... just the basics.
 
-No surprises. Just copying the json configuration files to your project root folder should be enough.
+This is the typical local debugging chain when using Vimspector:
+```
+   Vim -> Vimspector plugin -> adapter -> native debugger -> binary
+```
 
-## Do i need to copy json configuration files to every project?
+Vimspector is a Vim plugin that adds support for DAP (Debugger Adapter Protocol) and visual debugging (separated windows for code, variables, stack, ...).
+DAP protocol comes from Microsoft and it is a language-agnostic debugger protocol: https://microsoft.github.io/debug-adapter-protocol/ \
+The point is that it is "unrealistic to assume that existing debuggers or runtimes adopt this protocol any time soon" (words from the main DAP website). So, the solution is to use a bridge between the DAP protocol and the regular debugger used for any language (ie: gdb for C).\
+This bridge is called 'adapter', and Microsoft itself is providing some of these adapters (ie: debugpy for python, vscode-cpptools for C/C++, ...).
 
-No. You can make json configuration files common to all projects by storing them in the appropriate Vimspector folders.
-- debug configuration profiles: 
-- debug adapter configuration:
-You can also place these files in the vimspector folder, so they are common for all projects (no more Vimspector config files in your project).
-But maybe you are interested in some special customization in a aprojec
-Depends on your needs
-Much better if Vimspector only shows you the ones related to your file type (python or C).
-In this case, you have to create language-specific Vimspector configuration files and place them in the Vimspector configuration files folder: YOUR_VIMSPECTOR_PATH/configurations/\<OS\>/\<filetype\>/your_config_file
+OK... so in the end, we'll end up using the regular native debugger under the hood. In fact, you can even send native debugger commands in the Vimspector window console (ie: (for gdb) -exec p i) \
+In some cases, like debugpy, the adapter and the debuger come in a single piece (it makes sense since this debugger comes directly from Microsoft).
 
-Note: You can use any filename, but it can not begin with a '.' symbol (so .vimspector.json is not a valid filename here)
+So, what do we need to configure for all these pieces (Vimspector, adapter, native debugger)?
+- Vimspector will need common (regardless the adapter type) configuration:
+  - request type (launch or attach to the target)
+  - program (binary to debug)
+  - whether to stop on entry or not
+  - Host/port (for remote debugging)
+  - etc ...
+- Adapter will need specific adapter configuration:
+  - set a command-line to execute the specific adapter
+  - automate the launching of the debugger server in the remote machine
+  - etc ...
+- Native debugger may require some initialization (ie: run some native gdb commands before starting debugging)
 
-Let's try it out! Let's say you're using linux. You should copy:
-- 'python.json' file to 'YOUR_VIMSPECTOR_PATH/configurations/linux/python/python.json
-- 'c.json' file to 'YOUR_VIMSPECTOR_PATH/configurations/linux/c/c.json
-- 'bash.json' file to 'YOUR_VIMSPECTOR_PATH/configurations/linux/sh/bash.json (only local debug configuration)
-  
-Files located in the Vimspector folder are common for all projects, so there is no need to create a specific debug configuration file for each project, unless you need to customize something for it. So great!, I'll probably only have to hit 'F5' in my next project to start debugging (no more configuration files).
+You can set the whole configuration in a single file, but it is advisable to split it in two files: Vimspector config and adapter config.
+As the number of debug configurations and its complexity increase, it helps to better organize the information (in fact, several Vimspector configurations could use the same adapter configuration).
 
-Note: Vimspector takes the configuration file/s from your project folder or its own folder (not from both of them, and your project folder takes precedence).
+Take-away: if you Vimspector configuration is simple, just use a single file. This repo follows this single file configuration approach.
 
-**Do you want to know more about Vimspector configuration files?**
+## Let's improve the setup
+
+Great! It is working... but ... do you have any question/comments?
+- Do I need to copy the json file/s to every project? -> No
+- I would prefer Vimspector to show me only debug configurations belonging to the file opened in Vim -> No problem
+- What about debugging my current project (not those simple examples)? -> You're almost ready
+
+### Common configuration files
+
+You can store Vimspector and adapter configuration files either in your project folder or in your Vimspector path.
+Configuration files present in your project folder will take precedence over the ones found in the Vimspector path.
+Take-away: do not add any Vimspector/adapter config file to your project (use the common ones), unless you need to customize something for it.
+
+Filenames and locations:
+- Specific for a project:
+  - ${PROJECT_FOLDER)/.vimspector.json (for debug configuration profiles)
+  - ${PROJECT_FOLDER)/.gadgets.json (for adapters configuration)
+- Common for all projects:
+  - ${VIMSPECTOR_PATH}/configurations/\<OS\>/\<filetype\>/any_filename.json (there may be more than one)
+  - ${VIMSPECTOR_PATH}/gadgets/\<OS\>/.gadgets.json (for adapter config file)
+
+Maybe, at this point, you're asking yourself about the 'filetype' folder. Good question. Vimspector allows to split configuration profiles in several files (one per language). This way, it will only show you the ones related to the opened file.
+
+### Let's try this new setup
+
+- Remove configuration files from your project folder
+- Copy 'python.json' to ${VIMSPECTOR_PATH}/configurations/linux/python/python.json (let's assume you are working on Linux)
+- Copy 'c.json' to ${VIMSPECTOR_PATH}/configurations/linux/c/c.json
+- Copy 'bash.json' to ${VIMSPECTOR_PATH}/configurations/linux/sh\bash.json
+
+This time, if you open 'prueba.py' file and hit 'F5', you'll see only valid python debug options:
+![image](https://user-images.githubusercontent.com/63365742/131924732-d8dcdb13-7a80-41f7-871b-165d21c98349.png)
+
+Note: If there is only one debug configuration available, debug will start immediately (no need to choose an option).
+
+And the best is that you won't probaly need to do anything else for your next project....just hit 'F5'.
+
+## Remote debugging
+
+At this point, you've succesfully debugged the source code examples in your local machine... but we need to do something else to try remote-debugging out.\
+We need, of course, to run a debugger server in the remote machine.\
+Vimspector allows you to automate this task in the adapter configuration (connecting by **passwordless** ssh to the remote machine and launching the server).\
+This repo is not using this approach, and it is assuming that you manually enter the remote machine and launch the debugger server before start debugging.
+
+
+### How to run debugger server in the remote machine?
+Issue this command after connecting by ssh:
+- Python: python3 -m debugpy --listen ${client_host}:${port} --wait-for-client ${PYTHON_FILE}
+- C: gdbserver --once --no-startup-with-shell ${client_host}:${port} ${C_BINARY}
+
+Note:
+- client_host can be ignored (meaning localhost). '0.0.0.0' value means any client IP.
+
+Examples:
+- python3 -m debugpy --listen 0.0.0.0:5678 --wait-for-client prueba.py
+- gdbserver --once --no-startup-with-shell 5678 prueba
+
+### SSH-tunneling
+
+You can create a ssh tunnel between your local and remote machine and then configure both debugger client and server to use localhost:\
+https://github.com/microsoft/debugpy/wiki/Debugging-over-SSH
+
+I've just tested quickly by issuing this command (without keys argument):\
+```
+sh  -L 5678:127.0.0.1:5678 -l ${USER} ${REMOTE_HOSTNAME}
+```
+
+## Do you want to know more about Vimspector configuration files?
 Read comments in the repo configuration files and, of course, read official Vimspector github info.
