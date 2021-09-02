@@ -3,7 +3,7 @@
 Would you like to debug code from your Vim editor? Vimspector is the response:
 https://github.com/puremourning/vimspector
 
-Would you like debugging is as easy as hitting the 'start-debugging-button'? Follow this repo instructions.
+Would you like it to be as easy as hitting the 'start-debugging-button'? Follow this repo instructions.
 
 
 ## Prerequisites
@@ -48,7 +48,7 @@ No surprises. Just copying the json configuration files to your project root fol
 
 ## Do i need to copy json configuration files to every project?
 
-You can make json configuration files common to all projects by storing them in the Vimspector appropriate folders.
+No. You can make json configuration files common to all projects by storing them in the appropriate Vimspector folders.
 - debug configuration profiles: 
 - debug adapter configuration:
 You can also place these files in the vimspector folder, so they are common for all projects (no more Vimspector config files in your project).
