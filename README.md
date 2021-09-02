@@ -6,6 +6,7 @@ This repo includes four basic Vimspector configurations to debug:
 - Remote python code
 - Local C code
 - Remote C code
+
 as well as two very simple source code files (prueba.c and prueba.py)
 
-Read '.vimspector.json' configuration file for more help.
+Read comments in '.vimspector.json' configuration file for more help.
