@@ -36,6 +36,7 @@ Note: You can use any filename, but it can not begin with a '.' symbol (so .vims
 Let's try it out! Let's say you're using linux. You should copy:
 - 'python.json' file to 'YOUR_VIMSPECTOR_PATH/configurations/linux/python/python.json
 - 'c.json' file to 'YOUR_VIMSPECTOR_PATH/configurations/linux/c/c.json
+- 'bash.json' file to 'YOUR_VIMSPECTOR_PATH/configurations/linux/sh/bash.json (only local debug configuration)
   
 Files located in the Vimspector folder are common for all projects, so there is no need to create a specific debug configuration file for each project, unless you need to customize something for it. So great!, I'll probably only have to hit 'F5' in my next project to start debugging (no more configuration files).
 
