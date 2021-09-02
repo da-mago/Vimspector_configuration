@@ -37,8 +37,18 @@
    Future work:
    - Add configuration example for cross-compiled code and using OCD 
 */
-
 {
+  "adapters": {
+    "cpptools-remote": {
+      "command": [
+        "${gadgetDir}/vscode-cpptools/debugAdapters/OpenDebugAD7"
+      ],
+      "name": "cppdbg",
+      "configuration": {
+        "type": "cppdbg"
+      }
+    }
+  },
   "configurations": {
     // Local python debugging
     "Python": {
