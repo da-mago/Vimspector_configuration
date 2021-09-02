@@ -176,6 +176,13 @@
           }
         ]
       }
+    },
+    "Bash": {
+        "adapter": "vscode-bash",
+        "configuration": {
+            "program": "${file}",
+            "args": [ "*${CommandLineArgs}" ]
+        }
     }
   }
 }
