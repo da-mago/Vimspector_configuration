@@ -33,7 +33,7 @@ Otherwise, install it or compile it from sources (out of scope of this README)
 
 ## Try it out!
 - Create a new project folder
-- Copy '.gadgets.json' and '.vimspector.json' to it
+- Copy '.vimspector.json' to it
 - Copy the bash, C or python source code files to it
 - Open any of those source code files with Vim... and hit 'F5'... thats all! (try only local debug configurations at this point)
 
