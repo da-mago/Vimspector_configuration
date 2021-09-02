@@ -13,7 +13,8 @@ Prerequisites:
 - Vim 8.2+ with python3.6 support
 - Python 3.6+
 - Tools for compile/debug C code: gcc/gdb/gdbserver
-- Vimspector adapters (debugpy for python and vscode-cpptools for C)
+- Vimspector adapters ('debugpy' for python, 'vscode-cpptools' for C and 'vscode-bash-debug' for bash)
+  - Actually, Vimspector will ask for automatically install it if not found when starting debugging.
 
 
 **Steps**
