@@ -32,10 +32,10 @@ Otherwise, install it or compile it from sources (out of scope of this README)
 
 
 ## Try it out!
-- Create a new project folder
-- Copy '.vimspector.json' to it
-- Copy the bash, C or python source code files to it
-- Open any of those source code files with Vim... and hit 'F5'... thats all! (try only local debug configurations at this point)
+- Clone the repository
+- Copy '.vimspector.json' to 'src_examples' folder
+- Go to 'src_example' folder and open any example source code file with Vim.
+- Hit 'F5' ...  that's all! (try only local debug configurations at this point)
 
 <img src="https://user-images.githubusercontent.com/63365742/131861406-8bdc0632-7060-46f8-abf7-30fae03faa77.png" width="50%">
 
@@ -99,12 +99,15 @@ Filenames and locations:
 
 Maybe, at this point, you're asking yourself about the 'filetype' folder. Good question. Vimspector allows to split configuration profiles in several files (one per language). This way, it will only show you the ones related to the opened file.
 
-### Let's try this new setup
+### Let's try this new setup out
 
-- Remove configuration files from your project folder
+- Remove '.vimspector,json' from 'src_examples' folder
 - Copy 'python.json' to ${VIMSPECTOR_PATH}/configurations/linux/python/python.json (let's assume you are working on Linux)
 - Copy 'c.json' to ${VIMSPECTOR_PATH}/configurations/linux/c/c.json
 - Copy 'bash.json' to ${VIMSPECTOR_PATH}/configurations/linux/sh\bash.json
+- Again, from 'src_example' folder, open any example source code file with Vim and hit 'F5'.
+
+Note: Maybe you need first to create those 'python', 'c' and 'sh' folders.\
 
 This time, if you open 'prueba.py' file and hit 'F5', you'll see only valid python debug options:
 ![image](https://user-images.githubusercontent.com/63365742/131924732-d8dcdb13-7a80-41f7-871b-165d21c98349.png)
