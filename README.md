@@ -1,23 +1,39 @@
-# Debug in Vim (Vimspector)
+# Debug in Vim
 
-Would you like to debug code from your Vim editor? Vimspector is the response:
+Would you like to debug from your Vim editor? **Vimspector** is the response:
 https://github.com/puremourning/vimspector
 
 Would you like it to be as easy as hitting the 'start-debugging-button'? Follow this repo instructions.
 
 
 ## Prerequisites
-<details>
-<summary>Vim 8.2 with python3.6+ support</summary>
-
-Does your Vim support Vimspector? Run `vim --version` and check both Vim version and python3 support.
-  
-Otherwise, install it or compile it from sources (out of scope of this README)
-</details>
 
 <details>
 <summary>Python 3.6+</summary>
 </details>
+
+<details>
+<summary>Vim 8.2 with python3.6+ support</summary>
+
+Run `vim --version` and check both Vim version and python3 support.
+
+If your Vim does not meet both condition (which is quite likely), you'll to need to re-install it, or compile it from sources.
+
+Compilation instructions:
+- Download Vim repository:
+'''git clone https://github.com/vim/vim.git
+   cd vim
+'''
+- Configure build
+'''./configure --with-features=huge --enable-cscope --enable-multibyte \
+  --enable-rubyinterp --enable-pythoninterp --enable-python3interp \
+  --with-python3-config-dir=/usr/lib/python3.7/config-3.7m-x86_64-linux-gnu \
+  --enable-fail-if-missing
+```
+- Buid
+``` make```
+- Try it out!
+```./src/vim```
 
 <details>
 <summary>Tools for compile/debug C code: gcc/gdb/gdbserver</summary>
