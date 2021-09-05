@@ -10,40 +10,24 @@ Would you like it to be as easy as hitting the 'start-debugging-button'? Follow 
 
 <details>
 <summary>Python 3.6+</summary>
-</details>
+</details>   
 
 <details>
 <summary>Vim 8.2 with python3.6+ support</summary>
-
+<br>
 Run `vim --version` and check both Vim version and python3 support.
-
-If your Vim does not meet both condition (which is quite likely), you'll to need to re-install it, or compile it from sources.
-
-Compilation instructions:
-- Download Vim repository:
-'''git clone https://github.com/vim/vim.git
-   cd vim
-'''
-- Configure build
-'''./configure --with-features=huge --enable-cscope --enable-multibyte \
-  --enable-rubyinterp --enable-pythoninterp --enable-python3interp \
-  --with-python3-config-dir=/usr/lib/python3.7/config-3.7m-x86_64-linux-gnu \
-  --enable-fail-if-missing
-```
-- Buid
-``` make```
-- Try it out!
-```./src/vim```
+</details>
 
 <details>
-<summary>Tools for compile/debug C code: gcc/gdb/gdbserver</summary>
-  'gdb' in the client machine and gdbserver/OCD' in the remote machine. 'gcc' wherever you compile the code.
+<summary>Tools for compile/debug C code</summary>
+<br>   
+'gdb' (client machine), 'gdbserver/OCD' (remote machine) and 'gcc' (wherever you compile the code)
 </details>
 
 <details>
 <summary>Vimspector adapters ('debugpy' for python, 'vscode-cpptools' for C and 'vscode-bash-debug' for bash)</summary>
-  
-  Actually, when starting debugging, if the debug adapter needed by Vimspector is not present, Vimspector will ask the user if it should install it (automatically) for you. So, you just accept...and that's all 
+<br>
+Actually, when starting debugging, if the debug adapter needed by Vimspector is not present, Vimspector will ask the user if it should install it (automatically) for you. So, you just accept...and that's all 
 </details>
 
 
@@ -52,6 +36,16 @@ Compilation instructions:
 - Copy '.vimspector.json' to 'src_examples' folder
 - Go to 'src_example' folder and open any example source code file with Vim.
 - Hit 'F5' ...  that's all! (try only local debug configurations at this point)
+```
+git clone https://github.com/da-mago/Vimspector_configuration.git
+
+# Yes.. We're assuming that you're using Linux
+# Replace VIMSPECTOR_PATH with your Vimspector path
+# Create 'configurations/linux/<filetype> folders if they are not present
+cp Vimspector_cfg/python.json ${VIMSPECTOR_PATH}/configurations/linux/python/python.json
+cp Vimspector_cfg/c.json ${VIMSPECTOR_PATH}/configurations/linux/c/c.json
+cp Vimspector_cfg/bash.json ${VIMSPECTOR_PATH}/configurations/linux/sh\bash.json
+```
 
 <img src="https://user-images.githubusercontent.com/63365742/131861406-8bdc0632-7060-46f8-abf7-30fae03faa77.png" width="50%">
 
@@ -164,3 +158,7 @@ sh  -L 5678:127.0.0.1:5678 -l ${USER} ${REMOTE_HOSTNAME}
 
 ## Do you want to know more about Vimspector configuration files?
 Read comments in the repo configuration files and, of course, read official Vimspector github info.
+
+## Other useful links
+\
+You're not sudo. How to install a newer python package? https://ernie55ernie.github.io/python/2016/11/11/install-python-packages-for-local-user-without-sudo.html
